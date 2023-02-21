@@ -1,0 +1,31 @@
+const serverLink = "https://localhost:3000";
+
+const name = document.getElementById("name");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const form = document.getElementById("signUpForm");
+const error = document.getElementById("error");
+
+form.addEventListener("submit", submitFn);
+
+function submitFn(e) {
+  e.preventDefault();
+  if (noEmptyFields()) {
+    const user = {
+      name: name.value,
+      email: email.value,
+      password: password.value,
+    };
+    axios.post(`${serverLink}/user/signup`, user);
+  }
+}
+
+function noEmptyFields() {
+  error.innerHTML = "<br>";
+  if (name.value == "") error.innerHTML += "Name cannot be empty.";
+  if (email.value == "") error.innerHTML += " Email cannot be empty.";
+  if (password.value == "") error.innerHTML += " Password cannot be empty.";
+  if (name.value == "" || email.value == "" || password.value == "")
+    return false;
+  return true;
+}
