@@ -1,4 +1,4 @@
-const serverLink = "https://localhost:3000";
+const serverLink = "http://localhost:3000";
 
 const name = document.getElementById("name");
 const email = document.getElementById("email");
@@ -16,7 +16,16 @@ function submitFn(e) {
       email: email.value,
       password: password.value,
     };
-    axios.post(`${serverLink}/user/signup`, user);
+    const postFn = async () => {
+      const result = await axios.post(`${serverLink}/user/signup`, user);
+      console.log(result);
+      if (result.data == "not_unique") {
+        error.innerHTML = "<br>User already exists.";
+      } else {
+        clearFields();
+      }
+    };
+    postFn();
   }
 }
 
@@ -27,5 +36,13 @@ function noEmptyFields() {
   if (password.value == "") error.innerHTML += " Password cannot be empty.";
   if (name.value == "" || email.value == "" || password.value == "")
     return false;
+  error.innerHTML = "";
   return true;
+}
+
+function clearFields() {
+  name.value = "";
+  email.value = "";
+  password.value = "";
+  error.innerHTML = "";
 }
