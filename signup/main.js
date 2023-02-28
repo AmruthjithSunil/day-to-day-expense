@@ -19,10 +19,13 @@ function submitFn(e) {
     const postFn = async () => {
       const result = await axios.post(`${serverLink}/user/signup`, user);
       console.log(result);
-      if (result.data == "not_unique") {
+      if (result.data == "Added New User") {
+        clearFields();
+        error.innerHTML = "<br>User added successfully";
+      } else if (result.data == "not_unique") {
         error.innerHTML = "<br>User already exists.";
       } else {
-        clearFields();
+        error.innerHTML = `<br>Failed add because it is ${result.data}`;
       }
     };
     postFn();
@@ -44,5 +47,4 @@ function clearFields() {
   name.value = "";
   email.value = "";
   password.value = "";
-  error.innerHTML = "";
 }

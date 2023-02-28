@@ -17,11 +17,13 @@ function submitFn(e) {
     const postFn = async () => {
       const result = await axios.post(`${serverLink}/user/login`, user);
       console.log(result);
-      if (result.data == "not_unique") {
-        error.innerHTML = "<br>User already exists.";
-      } else {
-        clearFields();
-      }
+      if (result.data == "User Login Successful")
+        document.location.href = "../expenses/index.html";
+      // if (result.data == "not_unique") {
+      //   error.innerHTML = "<br>User already exists.";
+      // } else {
+      //   clearFields();
+      // }
     };
     postFn();
   }
