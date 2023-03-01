@@ -15,7 +15,10 @@ for (let i = 0; i < 3; i++) {
 }
 
 const getFn = async () => {
-  const response = await axios.get(serverLink);
+  const token = localStorage.getItem("token");
+  const response = await axios.get(serverLink, {
+    headers: { Authorization: token },
+  });
   const expenses = response.data;
   for (let i = 0; i < expenses.length; i++) {
     expenseList.appendChild(createLi(expenses[i]));
@@ -37,8 +40,11 @@ function createDeleteButton() {
   deleteButton.textContent = "delete";
   deleteButton.className = "btn btn-danger mt-1";
   deleteButton.addEventListener("click", async (e) => {
+    const token = localStorage.getItem("token");
     const id = e.target.parentElement.id;
-    await axios.delete(`${serverLink}/${id}`);
+    await axios.delete(`${serverLink}/${id}`, {
+      headers: { Authorization: token },
+    });
     e.target.parentElement.remove();
   });
   return deleteButton;
@@ -52,7 +58,10 @@ form.addEventListener("submit", (e) => {
     category: category.textContent,
   };
   const postFn = async () => {
-    const response = await axios.post(serverLink, expense);
+    const token = localStorage.getItem("token");
+    const response = await axios.post(serverLink, expense, {
+      headers: { Authorization: token },
+    });
     console.log(response);
     const expenseWithId = response.data;
     expenseList.appendChild(createLi(expenseWithId));
