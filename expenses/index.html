@@ -11,6 +11,7 @@
 <body>
   <div class="container">
     <a type="button" class="btn btn-light float-end" href="../login/index.html">Log Out</a>
+    <div class="float-end" id="userEmail"></div>
     <form id="expenseAdd">
       <div class="mb-3">
         <label for="amount" class="form-label">Expense Amount</label>
@@ -32,8 +33,10 @@
       </div>
       <div id="status"></div>
     </form>
-    <a id="buyPremium" type="button" class="btn btn-light float-end">Buy Premium</a>
+    <div id="premium" class="float-end"></div>
+    <!--a id="buyPremium" type="button" class="btn btn-light">Buy Premium</a-->
     <ul id="expense-list"></ul>
+    <ul id="leaderboard"></ul>
   </div>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
