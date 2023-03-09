@@ -1,4 +1,4 @@
-const serverLink = "http://localhost:3000/expense";
+const serverLink = "http://localhost:3000";
 
 const amount = document.getElementById("amount");
 const description = document.getElementById("description");
@@ -7,6 +7,7 @@ const form = document.getElementById("expenseAdd");
 const options = document.getElementsByClassName("option");
 const expenseList = document.getElementById("expense-list");
 const error = document.getElementById("status");
+const buyPremium = document.getElementById("buyPremium");
 
 for (let i = 0; i < 3; i++) {
   options[i].addEventListener("click", () => {
@@ -14,9 +15,47 @@ for (let i = 0; i < 3; i++) {
   });
 }
 
-const getFn = async () => {
+buyPremium.onclick = async function (e) {
   const token = localStorage.getItem("token");
-  const response = await axios.get(serverLink, {
+  const response = await axios.get(`${serverLink}/purchase/premiummembership`, {
+    headers: { Authorization: token },
+  });
+  const options = {
+    key: response.data.key_id,
+    order_id: response.data.order_id,
+    handler: async function (response) {
+      await axios.post(
+        `${serverLink}/purchase/updatetransactionstatus`,
+        {
+          order_id: options.order_id,
+          payment_id: response.razorpay_payment_id,
+        },
+        { headers: { Authorization: token } }
+      );
+      alert("You are a Premium User Now");
+    },
+  };
+  const rzp1 = new Razorpay(options);
+  rzp1.open();
+  e.preventDefault();
+
+  rzp1.on("payment.failed", async function (response) {
+    console.log(response);
+    alert("Something went wrong");
+    console.log(options);
+    axios.post(
+      `${serverLink}/purchase/transactionfailed`,
+      {
+        order_id: options.order_id,
+      },
+      { headers: { Authorization: token } }
+    );
+  });
+};
+
+const getExpenses = async () => {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(`${serverLink}/expense`, {
     headers: { Authorization: token },
   });
   const expenses = response.data;
@@ -25,7 +64,7 @@ const getFn = async () => {
   }
 };
 
-getFn();
+getExpenses();
 
 function createLi({ id, amount, description, category }) {
   const li = document.createElement("li");
@@ -42,7 +81,7 @@ function createDeleteButton() {
   deleteButton.addEventListener("click", async (e) => {
     const token = localStorage.getItem("token");
     const id = e.target.parentElement.id;
-    await axios.delete(`${serverLink}/${id}`, {
+    await axios.delete(`${serverLink}/expense/${id}`, {
       headers: { Authorization: token },
     });
     e.target.parentElement.remove();
@@ -59,7 +98,7 @@ form.addEventListener("submit", (e) => {
   };
   const postFn = async () => {
     const token = localStorage.getItem("token");
-    const response = await axios.post(serverLink, expense, {
+    const response = await axios.post(`${serverLink}/expense`, expense, {
       headers: { Authorization: token },
     });
     console.log(response);
