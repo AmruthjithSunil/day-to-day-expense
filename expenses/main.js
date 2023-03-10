@@ -45,6 +45,7 @@ async function getUser() {
       });
       const users = response.data;
       const size = users.length;
+      document.getElementById("leaderboard").innerHTML = "";
       for (let i = 0; i < size; i++) {
         const li = document.createElement("li");
         li.textContent = `name: ${users[i].name} totalExpense: ${users[i].totalExpense}`;
