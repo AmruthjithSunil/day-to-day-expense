@@ -140,6 +140,19 @@ function createDeleteButton() {
     await axios.delete(`${serverLink}/expense/${id}`, {
       headers: { Authorization: token },
     });
+    if (document.getElementById("leaderboard").innerHTML != "") {
+      const response = await axios.get(`${serverLink}/premium/leaderboard`, {
+        headers: { Authorization: token },
+      });
+      const users = response.data;
+      const size = users.length;
+      document.getElementById("leaderboard").innerHTML = "";
+      for (let i = 0; i < size; i++) {
+        const li = document.createElement("li");
+        li.textContent = `name: ${users[i].name} totalExpense: ${users[i].totalExpense}`;
+        document.getElementById("leaderboard").appendChild(li);
+      }
+    }
     e.target.parentElement.remove();
   });
   return deleteButton;
