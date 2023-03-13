@@ -39,6 +39,9 @@ async function getUser() {
     document.getElementById(
       "premium"
     ).innerHTML += `<a id="showLeaderboard" type="button" class="btn btn-light">Show Leaderboard</a>`;
+    document.getElementById(
+      "premium"
+    ).innerHTML += `<a id="generateReport" href="../report/index.html" type="button" class="btn btn-light">Generate Report</a>`;
     document.getElementById("showLeaderboard").onclick = async function (e) {
       const response = await axios.get(`${serverLink}/premium/leaderboard`, {
         headers: { Authorization: token },
