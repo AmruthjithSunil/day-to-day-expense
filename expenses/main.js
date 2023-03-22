@@ -4,24 +4,76 @@ const amount = document.getElementById("amount");
 const description = document.getElementById("description");
 const category = document.getElementById("category");
 const form = document.getElementById("expenseAdd");
-const options = document.getElementsByClassName("option");
 const expenseList = document.getElementById("expense-list");
 const error = document.getElementById("status");
 
+if (!localStorage.getItem("pageSize")) {
+  localStorage.setItem("pageSize", 5);
+}
+
+const options = document.getElementsByClassName("option");
 for (let i = 0; i < 3; i++) {
   options[i].addEventListener("click", () => {
     category.textContent = options[i].textContent;
   });
 }
 
-async function getExpenses() {
+async function getExpenses(page) {
   const token = localStorage.getItem("token");
-  const response = await axios.get(`${serverLink}/expense`, {
-    headers: { Authorization: token },
+  const pageSize = localStorage.getItem("pageSize");
+  const {
+    data: { expenses, lastPage },
+  } = await axios.get(`${serverLink}/expense/page/${page}`, {
+    headers: { Authorization: token, PageSize: pageSize },
   });
-  const expenses = response.data;
+  expenseList.innerHTML = "";
+  document.getElementById("pages").innerHTML = "";
   for (let i = 0; i < expenses.length; i++) {
     expenseList.appendChild(createLi(expenses[i]));
+  }
+  if (1 < page) {
+    document.getElementById("pages").innerHTML += `<div
+     class="btn btn-secondary"
+     onclick='getExpenses(${page - 1});' 
+     id="prevPage">previous page</div>`;
+  }
+  if (lastPage > page) {
+    document.getElementById("pages").innerHTML += `<div
+     class="btn btn-secondary"
+     onclick='getExpenses(${page + 1});' 
+     id="nextPage">next page</div>`;
+  }
+  document.getElementById("pages").innerHTML += `<div>
+      <div>${page}/${lastPage}</div>
+      <div class="dropdown">
+        <button
+          id="pageSize"
+          class="btn btn-secondary dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Page Size
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <button type="button" class="dropdown-item pageOption">5</button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item pageOption">10</button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item pageOption">20</button>
+          </li>
+        </ul>
+      </div>
+    </div>`;
+  const pageOptions = document.getElementsByClassName("pageOption");
+  for (let i = 0; i < 3; i++) {
+    pageOptions[i].addEventListener("click", () => {
+      localStorage.setItem("pageSize", pageOptions[i].textContent);
+      getExpenses(page);
+    });
   }
 }
 
@@ -103,7 +155,7 @@ async function getUser() {
 }
 
 getUser();
-getExpenses();
+getExpenses(1);
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const expense = {
